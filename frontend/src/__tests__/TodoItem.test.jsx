@@ -10,17 +10,6 @@ const baseTodo = {             // ** TodoItem พื้นฐานสำหร�
   comments: [],
 };
 
-const todoItem1 = { id: 1, title: 'First todo', done: false, comments: [] };
-const todoItem2 = { id: 2, title: 'Second todo', done: false, comments: [
-  { id: 1, message: 'First comment' },
-  { id: 2, message: 'Second comment' },
-] };
-
-const originalTodoList = [
-  todoItem1,
-  todoItem2,
-]
-
 describe('TodoItem', () => {
   it('renders with comments correctly', () => {
     const todoWithComment = {
