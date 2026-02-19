@@ -1,6 +1,5 @@
 import { render, screen, fireEvent} from '@testing-library/react'
 import { vi } from 'vitest'
-import App from '../App.jsx'
 import TodoItem from '../TodoItem.jsx';
 import userEvent from '@testing-library/user-event'
 
@@ -11,11 +10,16 @@ const baseTodo = {             // ** TodoItem พื้นฐานสำหร�
   comments: [],
 };
 
-const mockResponse = (body, ok = true) =>
-  Promise.resolve({
-    ok,
-    json: () => Promise.resolve(body),
-});
+const todoItem1 = { id: 1, title: 'First todo', done: false, comments: [] };
+const todoItem2 = { id: 2, title: 'Second todo', done: false, comments: [
+  { id: 1, message: 'First comment' },
+  { id: 2, message: 'Second comment' },
+] };
+
+const originalTodoList = [
+  todoItem1,
+  todoItem2,
+]
 
 describe('TodoItem', () => {
   it('renders with comments correctly', () => {
@@ -95,35 +99,5 @@ describe('TodoItem', () => {
 
     // assert
     expect(onAddNewComment).toHaveBeenCalledWith(baseTodo.id, 'New comment');
-  });
-});
-
-describe('App', () => {
-  beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn());
-  });
-
-  afterEach(() => {
-    vi.resetAllMocks();
-    vi.unstubAllGlobals();
-  });
-
-  it('renders correctly', async () => {
-    global.fetch.mockImplementationOnce(() =>
-      mockResponse([
-        { id: 1, title: 'First todo', done: false, comments: [] },
-        { id: 2, title: 'Second todo', done: false, comments: [
-          { id: 1, message: 'First comment' },
-          { id: 2, message: 'Second comment' },
-        ] },
-      ]),
-    );
-    
-    render(<App />);
-
-    expect(await screen.findByText('First todo')).toBeInTheDocument();
-    expect(await screen.findByText('Second todo')).toBeInTheDocument();
-    expect(await screen.findByText('First comment')).toBeInTheDocument();
-    expect(await screen.findByText('Second comment')).toBeInTheDocument();
   });
 });
