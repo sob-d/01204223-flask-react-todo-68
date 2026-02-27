@@ -3,8 +3,7 @@ import click
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 
 from models import TodoItem, Comment, db, User
 
