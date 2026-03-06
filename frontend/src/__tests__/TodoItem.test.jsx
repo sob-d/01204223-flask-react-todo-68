@@ -2,6 +2,11 @@ import { render, screen, fireEvent} from '@testing-library/react'
 import { vi } from 'vitest'
 import TodoItem from '../TodoItem.jsx';
 import userEvent from '@testing-library/user-event'
+import { useAuth } from '../context/AuthContext';
+
+vi.mock('../context/AuthContext', () => ({
+  useAuth: vi.fn(),
+}));
 
 const baseTodo = {             // ** TodoItem พื้นฐานสำหรับทดสอบ
   id: 1,
@@ -11,6 +16,15 @@ const baseTodo = {             // ** TodoItem พื้นฐานสำหร�
 };
 
 describe('TodoItem', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn());
+    useAuth.mockReturnValue({
+      username: 'testuser',
+      login: vi.fn(),
+      logout: vi.fn(),
+    });
+  });
+
   it('renders with comments correctly', () => {
     const todoWithComment = {
       ...baseTodo,
