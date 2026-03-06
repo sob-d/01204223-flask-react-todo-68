@@ -53,7 +53,7 @@ def add_todo():
         return (jsonify({'error': 'Invalid todo data'}), 400)
     
 
-@app.route('/api/todos/<int:id>/toggle/', methods=['PATCH'])
+@app.route('/api/todos/<int:id>/toggle/', methods=['GET', 'PATCH'])
 def toggle_todo(id):
     todo = TodoItem.query.get_or_404(id)
     todo.done = not todo.done
