@@ -1,6 +1,22 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, cleanup } from '@testing-library/react'
 import { vi } from 'vitest'
 import App from '../App.jsx'
+
+const localStorageMock = {
+  getItem: vi.fn((key) => {
+    return localStorageMock[key] || null;
+  }),
+  setItem: vi.fn((key, value) => {
+    localStorageMock[key] = value.toString();
+  }),
+  removeItem: vi.fn((key) => {
+    delete localStorageMock[key];
+  }),
+  clear: vi.fn(() => {
+    delete localStorageMock['username'];
+    delete localStorageMock['accessToken'];
+  })
+};
 
 const mockResponse = (body, ok = true) =>
   Promise.resolve({
@@ -22,14 +38,22 @@ const originalTodoList = [
 describe('App', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn());
+    
+    vi.stubGlobal('localStorage', localStorageMock);
+    localStorage.setItem("username", "testuser");
+    localStorage.setItem("accessToken", "fake-token");
   });
 
   afterEach(() => {
+    localStorage.clear();
+    cleanup();
+
     vi.resetAllMocks();
     vi.unstubAllGlobals();
   });
 
-  it('renders correctly', async () => {
+  it('renders correctly', async() => {
+    // *** ให้คืน mockResponse(originalTodoList) เลย ลบของเก่าออก
     global.fetch.mockImplementationOnce(() =>
       mockResponse(originalTodoList)
     );
@@ -65,5 +89,11 @@ describe('App', () => {
 
     // ตรวจสอบว่า todo item นั้นเปลี่ยนคลาสเป็น done แล้ว
     expect(await screen.findByText('First todo')).toHaveClass('done');
+    expect(global.fetch).toHaveBeenLastCalledWith(expect.stringMatching(/1\/toggle/), { 
+      
+      headers: {
+        'Authorization': 'Bearer fake-token'
+      }
+    });
   });
 });
